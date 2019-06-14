@@ -15,8 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
-    @Autowired
-    private EncryptorComponent encryptorComponent;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
@@ -38,6 +37,7 @@ public class LoginInterceptor implements HandlerInterceptor {
                     log.info("Reset expire time success!");
                     Long newBirthTime = System.currentTimeMillis();
                     jedis.set(token + account, newBirthTime.toString());
+                    jedis.expire(token+account, 60 * 60 * 2);
                     jedis.close();
                 }
                 return true;

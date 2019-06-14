@@ -1,21 +1,18 @@
 package com.example.spwork.controller;
 
-import com.example.spwork.component.AuthorityAspect;
 import com.example.spwork.component.EncryptorComponent;
 import com.example.spwork.entity.User;
 import com.example.spwork.service.UserService;
+import com.example.spwork.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.server.ResponseStatusException;
 import redis.clients.jedis.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.beans.Encoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,43 +37,15 @@ public class UserController {
         String token=request.getHeader("Authorization");
         String level=(String)(encryptorComponent.decrypt(token).get("level"));
         log.debug("用户名为"+user.getAccount()+"密码为"+user.getPassword());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userService.addUser(user,level);
+        userService.addUser(user,level);
         return Map.of("code","200","message","添加成功");
     }
 
     @PostMapping("/login")
     public Map login(@RequestBody User user) {
         log.debug("账号为" + user.getAccount() + "密码为" + user.getPassword());
-        String pw = userService.SelectPs(user.getAccount());
-        String level = userService.SelectLevel(user.getAccount());
-        Optional.ofNullable(pw)
-                .or(() -> {
-                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "用户名或密码错误");
-                })
-                .ifPresent(u -> {
-                    if (!passwordEncoder.matches(user.getPassword(), pw)) {
-                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "用户名或密码错误");
-                    }  });
-                    String account = user.getAccount();
-                    Map map = Map.of("account", user.getAccount(),"level",level);
-                    // 生成加密token
-                    String token = encryptorComponent.encrypt(map);
-                    // 在header创建自定义的权限
-                    Jedis jedis = new Jedis("127.0.0.1", 6379);
-                    jedis.set(account, token);
-                    //设置key生存时间，当key过期时，它会被自动删除，时间是秒
-                    jedis.expire(account, 60 * 60 * 2);
-                    jedis.set(token, account);
-                    jedis.expire(token, 60 * 60 * 2);
-                    Long currentTime = System.currentTimeMillis();
-                    jedis.set(token + account, currentTime.toString());
-                    jedis.expire(token, 60 * 60 * 2);
-                    log.debug(token);
-                    jedis.close();
-                    //response.setHeader("Authorization", token);
-                    Map map2 = Map.of("code", "200", "message", "登陆成功","Authorization", token);
-                    return map2;
+        Map map=userService.login(user);
+        return map;
     }
     @PostMapping("/updateUser") //更新用户信息
     public Map updateUser(@RequestBody User user,HttpServletRequest request)
@@ -99,6 +68,7 @@ public class UserController {
     {
         String token=request.getHeader("Authorization");
         String level=(String)(encryptorComponent.decrypt(token).get("level"));//当前用户权限
+
         String level2=userService.SelectLevel(user.getAccount());//要删除的用户权限
         if(level2.equals("SUPERADMIN"))
         {
@@ -135,7 +105,7 @@ public class UserController {
     {
         String token=request.getHeader("Authorization");
         String level=(String)(encryptorComponent.decrypt(token).get("level"));
-        List<User> userList =userService.Listall(user,level);
+        List<User> userList =userService.ListAll(user,level);
         return Map.of("code","200","data",userList);
     }
     @GetMapping("/listOne")  //某个用户信息
@@ -157,7 +127,7 @@ public class UserController {
             userService.updatePass(newPass, map.get("account"));
             return Map.of("code","200","message","修改密码成功");
         }else
-         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "初始密码错误");
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "初始密码错误");
 
     }
 }
