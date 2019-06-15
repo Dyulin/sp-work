@@ -19,7 +19,7 @@ import java.util.Map;
 @Repository
 @Transactional
 public interface User_ExamRepository extends JpaRepository<User_Exam,Integer> {
-    //某人共有多少场监考，无论状态
+    //该监考已分配多少人
     @Query("select count(u.exam) from User_Exam u where u.exam.id = :id")
     int CountExamByExamId(@Param("id") int examId);
     //在当前时间段 某人有多少监考
@@ -38,7 +38,7 @@ public interface User_ExamRepository extends JpaRepository<User_Exam,Integer> {
             " from User_Exam ue where ue.exam.id=:eid")
     List<String> findByUser(@Param("eid") int eid);
     //某人有多少已分配未完成的监考
-    @Query("select count(ue.user) from  User_Exam  ue where ue.user=:id and ue.exam.state=0")
+    @Query("select count(ue.user) from  User_Exam  ue where ue.user.id=:id and ue.exam.state=0")
     int findCountById(@Param("id") int id);
     //查询所有监考的用户id 姓名；监考id，监考课程，监考状态
     @Query("select ue.id,ue.user.id,ue.user.name,ue.exam.id,ue.exam.course,ue.exam.state" +

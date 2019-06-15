@@ -51,10 +51,14 @@ public class ExamServiceImpl implements ExamService {
         LocalDateTime start = ExamRepository.find(eid).getStart();
         LocalDateTime end = ExamRepository.find(eid).getStart();
         int number = ExamRepository.find(eid).getNumber();
+        log.debug("该监考限制人数为"+number);
         Exam exam=ExamRepository.find(eid);
-        if (userexamRepository.CountExamByExamId(eid) >= number) {
+        log.debug("该监考已分配的人数为"+userexamRepository.CountExamByExamId(eid));
+        log.debug("新增的人数为"+users.size());
+        int number2=userexamRepository.CountExamByExamId(eid)+users.size();
+        if (number2 >number) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "该监考已分配人数已达上限");
+                    "该监考分配人数超过上限");
     }
         ArrayList<User> userlist = new ArrayList<User>();
         for (User u : users) {
@@ -96,11 +100,13 @@ public class ExamServiceImpl implements ExamService {
     @Override
     @MyAuthority(MyAuthority.MyAuthorityType.ADMIN)
     public void sendMessage(int uid,String level,int eid) {
+        //log.debug(account);
         List<String> list = userexamRepository.findByUser(eid);
-        User user = userRepository.findById(uid).get();
-        Exam exam = ExamRepository.findById(eid).get();
+        Exam exam = ExamRepository.find(eid);
+        User user = userRepository.find2(uid);
         String name = user.getName();
-        int counts = userexamRepository.findCountById(uid);
+        int counts = userexamRepository.findCountById(user.getId());
+        log.debug("当前有"+counts);
         log.debug(name + "：您好,您有一场新的监考，监考时间为" + exam.getStart() + "至"
                 + exam.getEnd() + " 地点为" + exam.getLocation() + "您共有" + counts + "场监考需参加");
         log.debug(" 本次监考所有老师为");

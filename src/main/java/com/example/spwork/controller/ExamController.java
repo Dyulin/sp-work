@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Map;
 
@@ -46,8 +47,8 @@ public class ExamController {
         List<Object[]> data=examService.CountEveryUserExams(level,level);
         return Map.of("code","200","message","获取用户监考次数成功","data",data);
     }
-    @GetMapping("/sendMessage/{uid}/{eid}") //向分配后的教师发送短信
-    public Map sendMessage(@PathVariable int uid,@PathVariable int eid,HttpServletRequest request){
+    @PostMapping("/sendMessage/{uid}/{eid}") //向分配后的教师发送短信
+    public Map sendMessage(@PathVariable int uid, @PathVariable int eid, HttpServletRequest request){
         String token=request.getHeader("Authorization");
         String level=(String)(encryptorComponent.decrypt(token).get("level"));
         examService.sendMessage(uid,level,eid);

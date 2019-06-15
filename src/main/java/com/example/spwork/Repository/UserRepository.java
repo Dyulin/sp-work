@@ -19,8 +19,12 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     @PersistenceContext
     @Query("SELECT u FROM User u WHERE u.account=:account")
     User  find(@Param("account") String account);
+
     @Query("SELECT u.level FROM User u WHERE u.account=:account")
     String  findLevel(@Param("account") String account);
+
+    @Query("SELECT u FROM User u WHERE u.id=:id")
+    User find2(@Param("id") int id);
 
     @Modifying
     @Query("UPDATE User u SET u.intro=:intro , u.name=:name " +

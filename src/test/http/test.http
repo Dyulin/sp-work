@@ -1,20 +1,16 @@
 ###
-POST http://localhost:8080/api/adduser
-Content-Type: application/json
-
-{
-  "account": "1234",
-  "password": "123sa"
-}
-
-###
-
 POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
-  "account": "12345",
-  "password": "123sa"
+  "account": "1",
+  "password": "1"
 }
+
+###
+
+POST http://localhost:8080/api/sendMessage/7/2
+Content-Type: application/json
+Authorization:537d077e97c4d675f9b6371d3ff5d367a77b287bca2c74d6897cf004fdbbeeb839f7caa232457b655158fb6d4d51be4c
 
 ###
