@@ -36,7 +36,7 @@ public interface User_ExamRepository extends JpaRepository<User_Exam,Integer> {
     //查询某监考的所有老师姓名
     @Query("select ue.user.name" +
             " from User_Exam ue where ue.exam.id=:eid")
-    List<String> findByUser(@Param("id") int eid);
+    List<String> findByUser(@Param("eid") int eid);
     //某人有多少已分配未完成的监考
     @Query("select count(ue.user) from  User_Exam  ue where ue.user=:id and ue.exam.state=0")
     int findCountById(@Param("id") int id);
@@ -45,7 +45,7 @@ public interface User_ExamRepository extends JpaRepository<User_Exam,Integer> {
             " from User_Exam ue order by ue.id desc")
     List<Object[]> queryAllExam();
     @Modifying
-    @Query("delete  from User_Exam ue where ue.exam.id=:id")
+    @Query("delete  from User_Exam ue where ue.exam.id=:eid")
     void delUserExam(int eid);
     @Query("select ue from User_Exam ue where ue.exam.id=:id")
     List<User> findUser(int id);
