@@ -10,7 +10,6 @@ import com.example.spwork.entity.User_Exam;
 import com.example.spwork.service.ExamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 @Slf4j
@@ -49,14 +47,15 @@ public class ExamServiceImpl implements ExamService {
     }
     @Override
     @MyAuthority(MyAuthority.MyAuthorityType.ADMIN)
-    public String setUserExam(List<User> users, String level, Exam exam) {
-        LocalDateTime start = ExamRepository.find(exam.getId()).getStart();
-        LocalDateTime end = ExamRepository.find(exam.getId()).getStart();
-        int number = ExamRepository.find(exam.getId()).getNumber();
-        if (userexamRepository.CountExamByExamId(exam.getId()) >= number) {
+    public String setUserExam(List<User> users, String level, int eid) {
+        LocalDateTime start = ExamRepository.find(eid).getStart();
+        LocalDateTime end = ExamRepository.find(eid).getStart();
+        int number = ExamRepository.find(eid).getNumber();
+        Exam exam=ExamRepository.find(eid);
+        if (userexamRepository.CountExamByExamId(eid) >= number) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "该监考已分配人数已达上限");
-        }
+    }
         ArrayList<User> userlist = new ArrayList<User>();
         for (User u : users) {
             User_Exam user_exam = new User_Exam();
@@ -129,8 +128,40 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     @MyAuthority(MyAuthority.MyAuthorityType.ADMIN)
-    public void delUserExam(Exam exam,String level) {
-        userexamRepository.delUserExam(exam.getId());
+    public void delUserExam(int eid,String level) {
+        userexamRepository.delUserExam(eid);
+    }
+
+    @Override
+    public void sendMessageSche() {
+        List<Integer> list=userexamRepository.findState0();
+        for(Integer i:list)
+        {
+            List<String> list1 =userexamRepository.findByUser(i);
+            Exam exam1 = ExamRepository.findById(i).get();
+            User user1 = userRepository.findById(i).get();
+            String name = user1.getName();
+            int counts = userexamRepository.findCountById(i);
+            log.debug(name + "：您好,您有一场新的监考，监考时间为 " + exam1.getStart() + "至"
+                    + exam1.getEnd() + " 地点为" + exam1.getLocation() + "您共有" + counts + "场监考需参加");
+            log.debug(" 本次监考所有老师为");
+            for (String l : list1) {
+                log.debug(l + " ");
+            }
+        }
+    }
+
+    @Override
+    public void updateState() {
+        LocalDateTime ldt= LocalDateTime.now();
+        List<Exam> list=userexamRepository.findExamSch();
+        for(Exam i:list)
+        {
+            if(ldt.isAfter(i.getEnd()))
+            {
+                ExamRepository.updateState(1,i.getId());
+            }
+        }
     }
 }
 

@@ -32,11 +32,11 @@ public class ExamController {
         examService.addExam(exam,level);
         return Map.of("code","200","message","新增监考成功");
     }
-    @PostMapping("/setUserExam")  //分配监考
-    public Map setUserExam(@RequestBody List<User> users,@RequestBody Exam exam, HttpServletRequest request){
+    @PostMapping("/setUserExam/{eid}")  //分配监考
+    public Map setUserExam(@RequestBody List<User> users,@PathVariable int eid, HttpServletRequest request){
         String token=request.getHeader("Authorization");
         String level=(String)(encryptorComponent.decrypt(token).get("level"));
-        String data=examService.setUserExam(users,level,exam);
+        String data=examService.setUserExam(users,level,eid);
         return Map.of("code","200","message","分配监考成功","data",data);
     }
     @GetMapping("/CountEveryUserExams")  //获取每一个用户监考次数
@@ -53,17 +53,17 @@ public class ExamController {
         examService.sendMessage(uid,level,eid);
         return Map.of("code","200","message","发送短信成功");
     }
-    @PostMapping("/updateExam")//重新分配监考
-    public Map updateExam(@RequestBody List<User> users,@RequestBody Exam exam, HttpServletRequest request)
+    @PostMapping("/updateExam/{eid}")//重新分配监考
+    public Map updateExam(@RequestBody List<User> users,@PathVariable int eid, HttpServletRequest request)
     {
         String token=request.getHeader("Authorization");
         String level=(String)(encryptorComponent.decrypt(token).get("level"));
-        List<User> userList= examService.queryUsers(exam.getId());
-        examService.delUserExam(exam,level);
-        try{examService.setUserExam(users,level,exam);}
+        List<User> userList= examService.queryUsers(eid);
+        examService.delUserExam(eid,level);
+        try{examService.setUserExam(users,level,eid);}
         catch (Exception e)
         {
-            examService.setUserExam(userList, level,exam );
+            examService.setUserExam(userList, level,eid );
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "请求错误：某人已经参与同时段两场监考，请重新进行分配");
         }

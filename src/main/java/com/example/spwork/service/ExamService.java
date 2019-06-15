@@ -9,12 +9,14 @@ import java.util.Map;
 
 public interface ExamService {
     void addExam(Exam exam,String level);
-    String setUserExam(List<User> users,String level,Exam exam);
+    String setUserExam(List<User> users,String level,int eid);
     List<Object[]> CountEveryUserExams(String ok, String level);
     void sendMessage(int uid,String level,int eid);
     List<Object[]> queryAllExam();
     Exam queryExamDetail(int eid);
     List<String> queryUsersByExam(int eid);
-    void delUserExam(Exam exam,String level);
+    void delUserExam(int eid,String level);
     List<User> queryUsers(int eid);
+    void sendMessageSche();
+    void updateState();
 }

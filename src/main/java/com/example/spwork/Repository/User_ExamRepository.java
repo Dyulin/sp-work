@@ -49,4 +49,8 @@ public interface User_ExamRepository extends JpaRepository<User_Exam,Integer> {
     void delUserExam(int eid);
     @Query("select ue from User_Exam ue where ue.exam.id=:id")
     List<User> findUser(int id);
+    @Query("select ue.user.id from User_Exam ue where ue.exam.state=0")
+    List<Integer> findState0();
+    @Query("Select ue.exam from User_Exam ue where ue.exam.state=0")
+    List<Exam> findExamSch();
 }
