@@ -66,7 +66,7 @@ public class ExamController {
         {
             examService.setUserExam(userList, level,eid );
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "请求错误：某人已经参与同时段两场监考，请重新进行分配");
+                    "请求错误：分配人数超过监考人数上限或者某人已经参与同时段两场监考，请重新进行分配");
         }
         return Map.of("code","200","message","修改分配成功");
     }
@@ -80,13 +80,13 @@ public class ExamController {
     {
         Exam exam= examService.queryExamDetail(eid);
         int state=exam.getState();
-        if(state!=0){
+        if(state!=-1){
             List <String> list=examService.queryUsersByExam(eid);
         return Map.of("code","200","message",
-                "获取所有监考信息成功","data",exam,"data2",list);
+                "获取监考信息成功","data",exam,"teachers",list);
         }
         return Map.of("code","200","message",
-                "获取所有监考信息成功","data",exam);
+                "获取监考信息成功","data",exam);
     }
 
 }

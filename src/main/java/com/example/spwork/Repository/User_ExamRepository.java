@@ -47,7 +47,7 @@ public interface User_ExamRepository extends JpaRepository<User_Exam,Integer> {
     @Modifying
     @Query("delete  from User_Exam ue where ue.exam.id=:eid")
     void delUserExam(int eid);
-    @Query("select ue from User_Exam ue where ue.exam.id=:id")
+    @Query("select ue.user from User_Exam ue where ue.exam.id=:id")
     List<User> findUser(int id);
     @Query("select ue.user.id from User_Exam ue where ue.exam.state=0")
     List<Integer> findState0();
