@@ -47,4 +47,7 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     @Query("DELETE from User u WHERE u.account=:account")
     int deleteByAccount(@Param("account") String account);
 
+    @Query("SELECT c FROM User c")
+    List<User> listAll();
+
 }

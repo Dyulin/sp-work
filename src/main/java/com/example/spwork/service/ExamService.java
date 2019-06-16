@@ -2,10 +2,8 @@ package com.example.spwork.service;
 
 import com.example.spwork.entity.Exam;
 import com.example.spwork.entity.User;
-import com.example.spwork.entity.User_Exam;
-
 import java.util.List;
-import java.util.Map;
+
 
 public interface ExamService {
     void addExam(Exam exam,String level);

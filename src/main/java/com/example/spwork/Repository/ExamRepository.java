@@ -1,7 +1,6 @@
 package com.example.spwork.Repository;
 
 import com.example.spwork.entity.Exam;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
