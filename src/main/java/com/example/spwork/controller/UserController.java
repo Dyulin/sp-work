@@ -100,7 +100,7 @@ public class UserController {
         }
         return Map.of("code","200","message","修改权限成功");
     }
-    @GetMapping("/listAll")  //所有用户信息
+    @PostMapping("/listAll")  //所有用户信息
     public Map ListAll(@RequestBody User user,HttpServletRequest request)
     {
         String token=request.getHeader("Authorization");
@@ -108,7 +108,7 @@ public class UserController {
         List<User> userList =userService.ListAll(user,level);
         return Map.of("code","200","data",userList);
     }
-    @GetMapping("/listOne")  //某个用户信息
+    @PostMapping("/listOne")  //某个用户信息
     public Map listOne(@RequestBody User user)
     {
         User user1 =userService.Select(user.getAccount());
