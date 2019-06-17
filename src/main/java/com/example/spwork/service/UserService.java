@@ -8,13 +8,14 @@ import java.util.Map;
 public interface UserService {
     Map login(User u);
     void addUser(User u, String level);
+    User findByAccount(String account);
     User Select(String account);
     String SelectPs(String account);
     String SelectLevel(String account);
     void update(User user);
     void update2(User user,String level);
     void changeAuth(User user,String level);
-    void updatePass(String newpass,String account);
+    String updatePass(String newpass,String account);
     List ListAll(User user, String level);
     void delUser(User user,String level);
 }

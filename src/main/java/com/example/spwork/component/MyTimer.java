@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 public class MyTimer {
     @Autowired
     private ExamService examService;
-    @Scheduled(cron = " 0 0 12 * * ?")
+    @Scheduled(cron = " 0 0 7 * * ?")
     public void sendMessage(){
         examService.sendMessageSche();
     }
-    @Scheduled(cron="0 0 0/12 * * ?")
+    @Scheduled(cron="0 0 0/2 * * ?")
     public void updateState(){
         examService.updateState();
     }

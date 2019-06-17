@@ -89,6 +89,7 @@ public class UserServiceImpl implements UserService {
     }
     public void update(User user) {
         try{
+            //String newPass=passwordEncoder.encode(user.getPassword());
             userRepository.updateUser(user.getIntro(),user.getName(), user.getPhone()
                     ,user.getPosition(),user.getAccount());
         }catch(Exception e)
@@ -122,14 +123,15 @@ public class UserServiceImpl implements UserService {
     {
         return userRepository.findAllByOrderByIdDesc();
     }
-    public void updatePass(String newpass,String account)
+    public String updatePass(String newpass,String account)
     {
         try{
             userRepository.updatePass(newpass, account);
         }catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "修改密码失败");
+            return "修改密码失败";
         }
+        return "success";
     }
     @MyAuthority(MyAuthority.MyAuthorityType.SUPERADMIN)
     public void delUser(User user,String level)
@@ -140,6 +142,10 @@ public class UserServiceImpl implements UserService {
         {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "删除失败");
         }
-
+    }
+    @Override
+    public User findByAccount(String account)
+    {
+        return userRepository.find(account);
     }
 }

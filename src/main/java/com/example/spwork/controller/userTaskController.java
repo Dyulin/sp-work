@@ -1,6 +1,6 @@
 package com.example.spwork.controller;
 
-import com.example.spwork.entity.UserTask;
+import com.example.spwork.entity.*;
 import com.example.spwork.service.impl.UserTaskServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class userTaskController {
         return Map.of("teacher", usertaskService.listAllUser());
     }
     @PostMapping("/add")
-    public Map postTask(@RequestBody UserTask usertask) {
+    public Map postTask(@RequestBody comment usertask) {
         return Map.of("alert", usertaskService.addUserTask(usertask));
     }
 

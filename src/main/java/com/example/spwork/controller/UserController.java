@@ -121,14 +121,13 @@ public class UserController {
         log.debug(map.get("oldPass"));
         log.debug(map.get("newPass"));
         String dbpass=userService.SelectPs(map.get("account"));
+        String message="修改失败";
         if(passwordEncoder.matches(map.get("oldPass"),dbpass))
         {
             String newPass=passwordEncoder.encode(map.get("newPass"));
-            userService.updatePass(newPass, map.get("account"));
-            return Map.of("code","200","message","修改密码成功");
-        }else
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "初始密码错误");
-
+            message=userService.updatePass(newPass, map.get("account"));
+        }
+        return Map.of("code","200","message",message);
     }
 }
 

@@ -11,6 +11,30 @@ Content-Type: application/json
 
 POST http://localhost:8080/api/sendMessage/7/2
 Content-Type: application/json
-Authorization:537d077e97c4d675f9b6371d3ff5d367a77b287bca2c74d6897cf004fdbbeeb839f7caa232457b655158fb6d4d51be4c
+Authorization:10ef17e93b86cfbbbb164017fa8d4c279b266c8eaa14e8abcd6daeafe043a738d421f7a12a2be12bf9a93d8cf9839f6813d763c26cfacdee7ed6205166382df7
+
+###
+GET http://localhost:8080/api/task/comment/1
+Authorization:10ef17e93b86cfbbbb164017fa8d4c279b266c8eaa14e8abcd6daeafe043a738d421f7a12a2be12bf9a93d8cf9839f6813d763c26cfacdee7ed6205166382df7
+
+###
+GET http://localhost:8080/api/task/comment/crew/1
+Authorization:10ef17e93b86cfbbbb164017fa8d4c279b266c8eaa14e8abcd6daeafe043a738d421f7a12a2be12bf9a93d8cf9839f6813d763c26cfacdee7ed6205166382df7
+
+###
+GET http://localhost:8080/api/task/comment/crew
+Authorization:10ef17e93b86cfbbbb164017fa8d4c279b266c8eaa14e8abcd6daeafe043a738d421f7a12a2be12bf9a93d8cf9839f6813d763c26cfacdee7ed6205166382df7
+
+###
+POST http://localhost:8080/api/task/comment/add
+Content-Type: application/json
+Authorization:1209f725c274d9b98d382c6f7b89ea1c682bc0d401429f05fe63f7454d4346d469e67a8f9d91bd3fb4efd9d80ffd37167a1ed3507e6d56f3120180ed2ae77664
+
+{
+  "comment": "nihaoaworld",
+  "account": "125",
+  "task":1,
+  "completeTime": "2019-04-18 20:20"
+}
 
 ###

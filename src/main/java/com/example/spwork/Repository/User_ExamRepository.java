@@ -27,22 +27,22 @@ public interface User_ExamRepository extends JpaRepository<User_Exam,Integer> {
             "(u.exam.end>:start AND u.exam.end<=:end) )")
     int CountUserByExamId(@Param("id") int userId, @Param("start") LocalDateTime start
     , @Param("end") LocalDateTime end);
-    //查询所有人已分配未完成的监考次数
-    @Query("select  u.id,u.account,u.name,count(ue.exam.id) " +
-            "from User u left join User_Exam ue on ue.user.id=u.id where " +
-            "ue.exam.state=0 group by u.id")
-    List<Object[]> CountEveryUserExams();
+    //
+
+   /*@Query("select  u.id,u.account,u.name,count(ue.exam.id) " +
+            "from User u left join User_Exam ue on ue.user.id=u.id" +
+            " group by u.id")
+    List<Object[]> CountEveryUserExams();*/
+
     //查询某监考的所有老师姓名
     @Query("select ue.user.name" +
             " from User_Exam ue where ue.exam.id=:eid")
     List<String> findByUser(@Param("eid") int eid);
+
     //某人有多少已分配未完成的监考
     @Query("select count(ue.user) from  User_Exam  ue where ue.user.id=:id and ue.exam.state=0")
     int findCountById(@Param("id") int id);
-    //查询所有监考的用户id 姓名；监考id，监考课程，监考状态
-    @Query("select ue.id,ue.user.id,ue.user.name,ue.exam.id,ue.exam.course,ue.exam.state" +
-            " from User_Exam ue order by ue.id desc")
-    List<Object[]> queryAllExam();
+
     @Modifying
     @Query("delete  from User_Exam ue where ue.exam.id=:eid")
     void delUserExam(int eid);

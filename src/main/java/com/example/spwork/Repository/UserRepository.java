@@ -50,4 +50,6 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     @Query("SELECT c FROM User c")
     List<User> listAll();
 
+    @Query("SELECT c FROM User c WHERE c.level='USER'")
+    List<User> listUser();
 }

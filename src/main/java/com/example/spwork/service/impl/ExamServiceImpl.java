@@ -4,9 +4,7 @@ import com.example.spwork.Repository.ExamRepository;
 import com.example.spwork.Repository.UserRepository;
 import com.example.spwork.Repository.User_ExamRepository;
 import com.example.spwork.component.MyAuthority;
-import com.example.spwork.entity.Exam;
-import com.example.spwork.entity.User;
-import com.example.spwork.entity.User_Exam;
+import com.example.spwork.entity.*;
 import com.example.spwork.service.ExamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +47,16 @@ public class ExamServiceImpl implements ExamService {
     @MyAuthority(MyAuthority.MyAuthorityType.ADMIN)
     public String setUserExam(List<User> users, String level, int eid) {
         LocalDateTime start = ExamRepository.find(eid).getStart();
-        LocalDateTime end = ExamRepository.find(eid).getStart();
+        LocalDateTime end = ExamRepository.find(eid).getEnd();
         int number = ExamRepository.find(eid).getNumber();
         log.debug("该监考限制人数为"+number);
         Exam exam=ExamRepository.find(eid);
+        int state=exam.getState();
+        if(state==1)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "该监考已完成，不能进行修改");
+        }
         log.debug("该监考已分配的人数为"+userexamRepository.CountExamByExamId(eid));
         log.debug("新增的人数为"+users.size());
         int number2=userexamRepository.CountExamByExamId(eid)+users.size();
@@ -90,21 +94,43 @@ public class ExamServiceImpl implements ExamService {
     }
     @Override
     @MyAuthority(MyAuthority.MyAuthorityType.ADMIN)
-    public List<Object[]> CountEveryUserExams(String ok, String level) {
-        try {
-            return userexamRepository.CountEveryUserExams();
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "获取信息失败");
+    public List<UserCountDTO> CountEveryUserExams(String ok, String level) {
+            List<User> list= userRepository.listAll();
+            List<UserCountDTO> list2 =new ArrayList<>();
+            for(User i:list){
+                int id=i.getId();
+                UserCountDTO userCountDTO= new UserCountDTO();
+                userCountDTO.setId(id);
+                userCountDTO.setAccount(i.getAccount());
+                userCountDTO.setName((i.getName()));
+                userCountDTO.setCounts(userexamRepository.findCountById(id));
+                list2.add(userCountDTO);            }
+                return list2;
         }
-    }
     @Override
     @MyAuthority(MyAuthority.MyAuthorityType.ADMIN)
-    public void sendMessage(int uid,String level,int eid) {
+    public String sendMessage(int uid,String level,int eid) {
         //log.debug(account);
         List<String> list = userexamRepository.findByUser(eid);
         Exam exam = ExamRepository.find(eid);
         User user = userRepository.find2(uid);
         String name = user.getName();
+        List<String> s = userexamRepository.findByUser(eid);
+        int flag =0;
+        for(String i:s){
+            if(i==name){
+                flag=1;
+            }
+        }
+        if(flag==0){
+            return  "该教师未被分配至此次监考，无法发送短信";
+        }
+        //int state=exam.getState();
+        /*if(state==1||state==-1)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "该教师未被分配至此次监考，无法发送短信");
+        }*/
         int counts = userexamRepository.findCountById(user.getId());
         log.debug("当前有"+counts);
         log.debug(name + "：您好,您有一场新的监考，监考时间为" + exam.getStart() + "至"
@@ -113,10 +139,12 @@ public class ExamServiceImpl implements ExamService {
         for (String o : list) {
             log.debug(o + " ");
         }
+        return "success";
     }
     @Override
-    public List<Object[]> queryAllExam() {
-        return userexamRepository.queryAllExam();
+    public List<Exam> queryAllExam() {
+        List<Exam> list = ExamRepository.queryAllExam();
+        return list;
     }
     @Override
     public Exam queryExamDetail(int eid) {
@@ -168,6 +196,15 @@ public class ExamServiceImpl implements ExamService {
                 ExamRepository.updateState(1,i.getId());
             }
         }
+    }
+    @Override
+    public void modifyState(int state,int id){
+        ExamRepository.updateState(state, id);
+    }
+
+    @Override
+    public List<Exam> findByState() {
+        return  ExamRepository.findExamByState();
     }
 }
 
